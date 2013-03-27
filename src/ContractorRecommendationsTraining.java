@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 
+import de.bwaldvogel.liblinear.Train;
 
 
 import util.BuildUtils;
@@ -78,9 +79,9 @@ public class ContractorRecommendationsTraining{
 
 	public static void main(String[] argv) {
 		String xml = "<ContractorRecommendationsTraining>"
-				+ "<inputPath>/Users/antonellis/workspace/machine-learning/contractor-recommendations/data/test/</inputPath>"
+				+ "<inputPath>/Users/antonellis/workspace/contractor-recommendations/data/test/</inputPath>"
 				+ "<tmpPath>/tmp/</tmpPath>"
-				+ "<outputPath>/Users/antonellis/workspace/machine-learning/contractor-recommendations/data/test/output/</outputPath>"
+				+ "<outputPath>/Users/antonellis/workspace/contractor-recommendations/data/test/output/</outputPath>"
 				+ "<maxPositiveExamples>-1</maxPositiveExamples>"
 				+ "<maxNegativeExamples>-1</maxNegativeExamples>"
 				+ "</ContractorRecommendationsTraining>";
@@ -106,7 +107,45 @@ public class ContractorRecommendationsTraining{
 
 			log.info(TaskUtils.getMemoryStatus());
 			log.info("Cleaning up memory");
+			this.positiveTrainingExamples.clear();
+			this.negativeTrainingExamples.clear();
+			System.gc();
+			log.info(TaskUtils.getMemoryStatus());
+			
+			String[] arguments_scale = { "-o", outputPath + "svm_training.scale", "-s", outputPath + "scale.params", outputPath + "svm_training"};
+
+			log.info("Scaling training data...");
+			log.info(TaskUtils.getMemoryStatus());
+			util.libsvm.SvmScaleCustom.main(arguments_scale);
+
 			log.info("Finished scaling training data...");
+
+			String[] arguments = new String[8];
+			if (this.outputModel) {
+				arguments[0] = "-s";
+				arguments[1] = "6";
+				arguments[2] = "-c";
+				arguments[3] = "128";
+				arguments[4] = outputPath + "svm_training.scale";
+				arguments[5] = outputPath + "model";
+			}
+			else { // otherwise do cross validation
+				arguments[0] = "-s";
+				arguments[1] = "6";
+				arguments[2] = "-c";
+				arguments[3] = "128";
+				arguments[4] = "-v";
+				arguments[5] = "5";
+				arguments[6] = outputPath + "svm_training.scale";
+				arguments[7] = outputPath + "model";
+			}
+			
+			log.info("Running liblinear scaling...");
+			log.info(TaskUtils.getMemoryStatus());
+			Train.main(arguments);
+			log.info("Finished running liblinear scaling...");
+
+			log.info("Done training in ~ " + (System.currentTimeMillis() - t0) / 60000 + " minutes.");
 
 		}
 		catch (Exception e) {
@@ -296,7 +335,7 @@ public class ContractorRecommendationsTraining{
 		
 		BufferedWriter out = null;
 		try {
-			FileWriter fstream = new FileWriter(this.outputPath + "svn_training");
+			FileWriter fstream = new FileWriter(this.outputPath + "svm_training");
 			out = new BufferedWriter(fstream);
 			
 			
@@ -349,7 +388,7 @@ public class ContractorRecommendationsTraining{
 
 		}
 		catch (IOException e) {
-			log.log(Level.SEVERE, "Exception when svn formatted training examples: " + Fmt.S(e));
+			log.log(Level.SEVERE, "Exception when svm formatted training examples: " + Fmt.S(e));
 			throw new RuntimeException(e);
 		}
 		finally {
@@ -366,7 +405,7 @@ public class ContractorRecommendationsTraining{
 
 		}
 		catch (IOException e) {
-			log.log(Level.SEVERE, "Exception when svn formatted training examples: " + Fmt.S(e));
+			log.log(Level.SEVERE, "Exception when svm formatted training examples: " + Fmt.S(e));
 			throw new RuntimeException(e);
 		}
 		finally {

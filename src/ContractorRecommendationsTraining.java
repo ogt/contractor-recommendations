@@ -78,9 +78,9 @@ public class ContractorRecommendationsTraining{
 
 	public static void main(String[] argv) {
 		String xml = "<ContractorRecommendationsTraining>"
-				+ "<inputPath>/Users/antonellis/workspace/machine-learning/contractor-recommendations/data/test/</inputPath>"
+				+ "<inputPath>data/test/</inputPath>"
 				+ "<tmpPath>/tmp/</tmpPath>"
-				+ "<outputPath>/Users/antonellis/workspace/machine-learning/contractor-recommendations/data/test/output/</outputPath>"
+				+ "<outputPath>data/test/output/</outputPath>"
 				+ "<maxPositiveExamples>-1</maxPositiveExamples>"
 				+ "<maxNegativeExamples>-1</maxNegativeExamples>"
 				+ "</ContractorRecommendationsTraining>";

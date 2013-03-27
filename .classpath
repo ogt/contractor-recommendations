@@ -25,5 +25,7 @@
 	<classpathentry kind="lib" path="lib/commons-logging-api-1.1.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-tests.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl-2.9.0.jar"/>
+	<classpathentry kind="lib" path="lib/liblinear-1.92.jar"/>
+	<classpathentry kind="lib" path="lib/libsvm.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

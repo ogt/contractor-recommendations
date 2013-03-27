@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 
+import de.bwaldvogel.liblinear.Train;
 
 
 import util.BuildUtils;
@@ -64,16 +65,12 @@ public class ContractorRecommendationsTraining{
 	
 	
 	public ContractorRecommendationsTraining(String xml) {
-		
-		
 		this.positiveTrainingExamples = new ArrayList<OpeningContractorPair>();
 		this.negativeTrainingExamples = new ArrayList<OpeningContractorPair>();
-		
 		
 		params = TaskUtils.parseXmlParameter(xml, "ContractorRecommendationsTraining");
 		Map boundParams = TaskUtils.bindBeanWithParameters(this, params);
 		log.info("bound params " + boundParams.toString());
-		
 	}
 
 	public static void main(String[] argv) {
@@ -81,8 +78,8 @@ public class ContractorRecommendationsTraining{
 				+ "<inputPath>data/test/</inputPath>"
 				+ "<tmpPath>/tmp/</tmpPath>"
 				+ "<outputPath>data/test/output/</outputPath>"
-				+ "<maxPositiveExamples>-1</maxPositiveExamples>"
-				+ "<maxNegativeExamples>-1</maxNegativeExamples>"
+				+ "<maxPositiveExamples>250000</maxPositiveExamples>"
+				+ "<maxNegativeExamples>250000</maxNegativeExamples>"
 				+ "</ContractorRecommendationsTraining>";
 
 		ContractorRecommendationsTraining contractorRecommendationsTrainer = new ContractorRecommendationsTraining(xml);
@@ -106,7 +103,45 @@ public class ContractorRecommendationsTraining{
 
 			log.info(TaskUtils.getMemoryStatus());
 			log.info("Cleaning up memory");
+			this.positiveTrainingExamples.clear();
+			this.negativeTrainingExamples.clear();
+			System.gc();
+			log.info(TaskUtils.getMemoryStatus());
+			
+			String[] arguments_scale = { "-o", outputPath + "svm_training.scale", "-s", outputPath + "scale.params", outputPath + "svm_training"};
+
+			log.info("Scaling training data...");
+			log.info(TaskUtils.getMemoryStatus());
+			util.libsvm.SvmScaleCustom.main(arguments_scale);
+
 			log.info("Finished scaling training data...");
+
+			String[] arguments = new String[8];
+			if (this.outputModel) {
+				arguments[0] = "-s";
+				arguments[1] = "6";
+				arguments[2] = "-c";
+				arguments[3] = "128";
+				arguments[4] = outputPath + "svm_training.scale";
+				arguments[5] = outputPath + "model";
+			}
+			else { // otherwise do cross validation
+				arguments[0] = "-s";
+				arguments[1] = "6";
+				arguments[2] = "-c";
+				arguments[3] = "128";
+				arguments[4] = "-v";
+				arguments[5] = "5";
+				arguments[6] = outputPath + "svm_training.scale";
+				arguments[7] = outputPath + "model";
+			}
+			
+			log.info("Running liblinear scaling...");
+			log.info(TaskUtils.getMemoryStatus());
+			Train.main(arguments);
+			log.info("Finished running liblinear scaling...");
+
+			log.info("Done training in ~ " + (System.currentTimeMillis() - t0) / 60000 + " minutes.");
 
 		}
 		catch (Exception e) {
@@ -147,7 +182,7 @@ public class ContractorRecommendationsTraining{
 	}
 	
 	private void iterateNegativeTrainingExamplesFromFile(String filePath, int maxExamples, String tmpPath, String outputPath) throws IOException {
-		log.info("Reading positive training examples from file " + filePath + " ...");
+		log.info("Reading negative training examples from file " + filePath + " ...");
 
 		CSVParser parser = new CSVParser();
 		parser.setParseHeader(true);
@@ -160,7 +195,7 @@ public class ContractorRecommendationsTraining{
 		parser.addHandler(handler);
 
 		parser.parse(new File(filePath));
-		log.info("Done reading positive training examples.");
+		log.info("Done reading negative training examples.");
 	}
 	
 	
@@ -175,7 +210,7 @@ public class ContractorRecommendationsTraining{
 		
 		log.info("ready to print " + this.positiveTrainingExamples.size() + "positive examples");
 		try {
-			FileWriter fstream = new FileWriter(this.outputPath + "positive.log");
+			FileWriter fstream = new FileWriter(this.outputPath + "positive.dat");
 			out = new BufferedWriter(fstream);
 
 			for (int k = 0; k < this.positiveTrainingExamples.size(); k++) {
@@ -203,7 +238,7 @@ public class ContractorRecommendationsTraining{
 		
 		log.info("ready to print " + this.negativeTrainingExamples.size() + "negative examples");
 		try {
-			FileWriter fstream = new FileWriter(this.outputPath + "negative.log");
+			FileWriter fstream = new FileWriter(this.outputPath + "negative.dat");
 			out = new BufferedWriter(fstream);
 
 			for (int k = 0; k < this.negativeTrainingExamples.size(); k++) {
@@ -266,11 +301,11 @@ public class ContractorRecommendationsTraining{
 				String featureNameTemp = entry.getKey();
 
 				if (k == 0 || !features.containsKey(featureNameTemp)) {
-					log.info("Initializing hash for feature " + featureNameTemp + "a");
+					//log.info("Initializing hash for feature " + featureNameTemp + "a");
 					features.put(featureNameTemp, new HashMap<String, Integer>());
 				}
 
-				log.info("a" + featureNameTemp + "a" + entry.getValue().value +" " +features.get(featureNameTemp) +"a");
+				//log.info("a" + featureNameTemp + "a" + entry.getValue().value +" " +features.get(featureNameTemp) +"a");
 				if (features.get(featureNameTemp).containsKey(entry.getValue().value)) {
 					continue;
 				}
@@ -288,15 +323,15 @@ public class ContractorRecommendationsTraining{
 			featureIds.put(entry.getKey(), id);
 			featureIdsInverse.put(id, entry.getKey());
 			prev = entry.getValue().intValue();
-			log.info("COUNTS          " + entry.getKey() + "=" + entry.getValue());
-			log.info("IDS          " + entry.getKey() + "=" + id);
+			//log.info("COUNTS          " + entry.getKey() + "=" + entry.getValue());
+			//log.info("IDS          " + entry.getKey() + "=" + id);
 			id += prev;
 			
 		}
 		
 		BufferedWriter out = null;
 		try {
-			FileWriter fstream = new FileWriter(this.outputPath + "svn_training");
+			FileWriter fstream = new FileWriter(this.outputPath + "svm_training");
 			out = new BufferedWriter(fstream);
 			
 			
@@ -349,7 +384,7 @@ public class ContractorRecommendationsTraining{
 
 		}
 		catch (IOException e) {
-			log.log(Level.SEVERE, "Exception when svn formatted training examples: " + Fmt.S(e));
+			log.log(Level.SEVERE, "Exception when svm formatted training examples: " + Fmt.S(e));
 			throw new RuntimeException(e);
 		}
 		finally {
@@ -366,7 +401,7 @@ public class ContractorRecommendationsTraining{
 
 		}
 		catch (IOException e) {
-			log.log(Level.SEVERE, "Exception when svn formatted training examples: " + Fmt.S(e));
+			log.log(Level.SEVERE, "Exception when svm formatted training examples: " + Fmt.S(e));
 			throw new RuntimeException(e);
 		}
 		finally {
@@ -403,13 +438,13 @@ public class ContractorRecommendationsTraining{
 	
 	
 	public void processPositiveExample(OpeningContractorPair pair) {
-		log.info("processing a positive example");
+		//log.info("processing a positive example");
 		this.positiveTrainingExamples.add(pair);
 		
 	}
 	
 	public void processNegativeExample(OpeningContractorPair pair) {
-		log.info("processing a positive example");
+		//log.info("processing a positive example");
 		this.negativeTrainingExamples.add(pair);
 		
 	}

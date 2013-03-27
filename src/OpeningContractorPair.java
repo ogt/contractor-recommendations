@@ -57,13 +57,6 @@ public class OpeningContractorPair {
 		// we want order-consistent iteration over the features and we use TreeMap
 		this.features = new TreeMap<String, ContractorRecommendationsFeature>();
 		
-		
-		//String[] openingTitleTokens = extractTokens(this.openingTitle);
-		//String[] contractorTitleTokens = extractTokens(this.contractorTitle);
-		//String[] contractorBlurbTokens = extractTokens(this.contractorBlurb);
-		
-		
-		
 		this.computeLocalFeatures();
 		
 	}
@@ -79,12 +72,12 @@ public class OpeningContractorPair {
 	private void computeOpeningTitleTermsFeatures() {
 
 		String[] openingTitleTokens = extractTokens(this.openingTitle);
-		log.info("computeOpeningTitleTermsFeatures: " + openingTitle  + "title tokens size " + openingTitleTokens.length + " " + openingTitleTokens[0]);
+		//log.info("computeOpeningTitleTermsFeatures: " + openingTitle  + "title tokens size " + openingTitleTokens.length + " " + openingTitleTokens[0]);
 		for (String token: openingTitleTokens) {
 			ContractorRecommendationsFeature tmpFeature =  
 					new ContractorRecommendationsFeature("INOPENINGTITLE_" + token, token, false, true);
 			addFeature(tmpFeature);
-			log.info("Adding feature " + "INTITLE_" + token);
+			//log.info("Adding feature " + "INTITLE_" + token);
 		}
 	}
 	
@@ -96,7 +89,7 @@ public class OpeningContractorPair {
 			ContractorRecommendationsFeature tmpFeature =  
 					new ContractorRecommendationsFeature("INCONTRACTORTITLE_" + token, token, false, true);
 			addFeature(tmpFeature);
-			log.info("Adding feature " + "INCONTRACTORTITLE_" + token);
+			//log.info("Adding feature " + "INCONTRACTORTITLE_" + token);
 		}
 	}
 	
@@ -108,7 +101,7 @@ public class OpeningContractorPair {
 			ContractorRecommendationsFeature tmpFeature =  
 					new ContractorRecommendationsFeature("INCONTRACTORBLURB_" + token, token, false, true);
 			addFeature(tmpFeature);
-			log.info("Adding feature " + "INCONTRACTORBLURB_" + token);
+			//log.info("Adding feature " + "INCONTRACTORBLURB_" + token);
 		}
 	}
 	
@@ -121,7 +114,7 @@ public class OpeningContractorPair {
 				ContractorRecommendationsFeature tmpFeature =  
 					new ContractorRecommendationsFeature("DIFFERENTTERMINTITLES_" + token, token, false, true);
 				addFeature(tmpFeature);
-				log.info("Adding feature " + "DIFFERENTTERMINTITLES_" + token);
+				//log.info("Adding feature " + "DIFFERENTTERMINTITLES_" + token);
 			}
 		}
 	}
@@ -152,7 +145,7 @@ public class OpeningContractorPair {
 		}
 			
 		if (commonCount.size() > 0) {
-			log.info(commonCount.size() + "");
+			//log.info(commonCount.size() + "");
 			for (Entry<String, MutableInt> entry : commonCount.entrySet()) {
 				String key = entry.getKey();
 				if (!"".equals(key) && key != null && commonCount.get(key) != null && commonCount.get(key).intValue() == 1) {
@@ -255,7 +248,7 @@ public class OpeningContractorPair {
 	
 	public static String[] extractTokens(String someString) {
 		String[] tmpTokens = splitPtn.split(someString);
-		log.info("extractTokens:  size " + tmpTokens.length + " " + someString + " " + tmpTokens[0]);
+		//log.info("extractTokens:  size " + tmpTokens.length + " " + someString + " " + tmpTokens[0]);
 		
 		String [] clearTokens = new String[tmpTokens.length];
 		int j = 0;

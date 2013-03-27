@@ -175,7 +175,7 @@ public class ContractorRecommendationsTraining{
 		
 		log.info("ready to print " + this.positiveTrainingExamples.size() + "positive examples");
 		try {
-			FileWriter fstream = new FileWriter(this.outputPath + "positive");
+			FileWriter fstream = new FileWriter(this.outputPath + "positive.log");
 			out = new BufferedWriter(fstream);
 
 			for (int k = 0; k < this.positiveTrainingExamples.size(); k++) {
@@ -203,7 +203,7 @@ public class ContractorRecommendationsTraining{
 		
 		log.info("ready to print " + this.negativeTrainingExamples.size() + "negative examples");
 		try {
-			FileWriter fstream = new FileWriter(this.outputPath + "negative");
+			FileWriter fstream = new FileWriter(this.outputPath + "negative.log");
 			out = new BufferedWriter(fstream);
 
 			for (int k = 0; k < this.negativeTrainingExamples.size(); k++) {

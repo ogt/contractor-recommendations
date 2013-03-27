@@ -65,25 +65,21 @@ public class ContractorRecommendationsTraining{
 	
 	
 	public ContractorRecommendationsTraining(String xml) {
-		
-		
 		this.positiveTrainingExamples = new ArrayList<OpeningContractorPair>();
 		this.negativeTrainingExamples = new ArrayList<OpeningContractorPair>();
-		
 		
 		params = TaskUtils.parseXmlParameter(xml, "ContractorRecommendationsTraining");
 		Map boundParams = TaskUtils.bindBeanWithParameters(this, params);
 		log.info("bound params " + boundParams.toString());
-		
 	}
 
 	public static void main(String[] argv) {
 		String xml = "<ContractorRecommendationsTraining>"
-				+ "<inputPath>/Users/antonellis/workspace/contractor-recommendations/data/test/</inputPath>"
+				+ "<inputPath>data/test/</inputPath>"
 				+ "<tmpPath>/tmp/</tmpPath>"
-				+ "<outputPath>/Users/antonellis/workspace/contractor-recommendations/data/test/output/</outputPath>"
-				+ "<maxPositiveExamples>-1</maxPositiveExamples>"
-				+ "<maxNegativeExamples>-1</maxNegativeExamples>"
+				+ "<outputPath>data/test/output/</outputPath>"
+				+ "<maxPositiveExamples>250000</maxPositiveExamples>"
+				+ "<maxNegativeExamples>250000</maxNegativeExamples>"
 				+ "</ContractorRecommendationsTraining>";
 
 		ContractorRecommendationsTraining contractorRecommendationsTrainer = new ContractorRecommendationsTraining(xml);
@@ -186,7 +182,7 @@ public class ContractorRecommendationsTraining{
 	}
 	
 	private void iterateNegativeTrainingExamplesFromFile(String filePath, int maxExamples, String tmpPath, String outputPath) throws IOException {
-		log.info("Reading positive training examples from file " + filePath + " ...");
+		log.info("Reading negative training examples from file " + filePath + " ...");
 
 		CSVParser parser = new CSVParser();
 		parser.setParseHeader(true);
@@ -199,7 +195,7 @@ public class ContractorRecommendationsTraining{
 		parser.addHandler(handler);
 
 		parser.parse(new File(filePath));
-		log.info("Done reading positive training examples.");
+		log.info("Done reading negative training examples.");
 	}
 	
 	
@@ -214,7 +210,7 @@ public class ContractorRecommendationsTraining{
 		
 		log.info("ready to print " + this.positiveTrainingExamples.size() + "positive examples");
 		try {
-			FileWriter fstream = new FileWriter(this.outputPath + "positive");
+			FileWriter fstream = new FileWriter(this.outputPath + "positive.dat");
 			out = new BufferedWriter(fstream);
 
 			for (int k = 0; k < this.positiveTrainingExamples.size(); k++) {
@@ -242,7 +238,7 @@ public class ContractorRecommendationsTraining{
 		
 		log.info("ready to print " + this.negativeTrainingExamples.size() + "negative examples");
 		try {
-			FileWriter fstream = new FileWriter(this.outputPath + "negative");
+			FileWriter fstream = new FileWriter(this.outputPath + "negative.dat");
 			out = new BufferedWriter(fstream);
 
 			for (int k = 0; k < this.negativeTrainingExamples.size(); k++) {
@@ -305,11 +301,11 @@ public class ContractorRecommendationsTraining{
 				String featureNameTemp = entry.getKey();
 
 				if (k == 0 || !features.containsKey(featureNameTemp)) {
-					log.info("Initializing hash for feature " + featureNameTemp + "a");
+					//log.info("Initializing hash for feature " + featureNameTemp + "a");
 					features.put(featureNameTemp, new HashMap<String, Integer>());
 				}
 
-				log.info("a" + featureNameTemp + "a" + entry.getValue().value +" " +features.get(featureNameTemp) +"a");
+				//log.info("a" + featureNameTemp + "a" + entry.getValue().value +" " +features.get(featureNameTemp) +"a");
 				if (features.get(featureNameTemp).containsKey(entry.getValue().value)) {
 					continue;
 				}
@@ -327,8 +323,8 @@ public class ContractorRecommendationsTraining{
 			featureIds.put(entry.getKey(), id);
 			featureIdsInverse.put(id, entry.getKey());
 			prev = entry.getValue().intValue();
-			log.info("COUNTS          " + entry.getKey() + "=" + entry.getValue());
-			log.info("IDS          " + entry.getKey() + "=" + id);
+			//log.info("COUNTS          " + entry.getKey() + "=" + entry.getValue());
+			//log.info("IDS          " + entry.getKey() + "=" + id);
 			id += prev;
 			
 		}
@@ -442,13 +438,13 @@ public class ContractorRecommendationsTraining{
 	
 	
 	public void processPositiveExample(OpeningContractorPair pair) {
-		log.info("processing a positive example");
+		//log.info("processing a positive example");
 		this.positiveTrainingExamples.add(pair);
 		
 	}
 	
 	public void processNegativeExample(OpeningContractorPair pair) {
-		log.info("processing a positive example");
+		//log.info("processing a positive example");
 		this.negativeTrainingExamples.add(pair);
 		
 	}

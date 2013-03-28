@@ -1,7 +1,8 @@
 machine-learning
 ================
 
-Data products's machine learning engine.
+A simple example of using machine learning algorithms to make recommendations of contractors based 
+on their past success/failures being hired for a particular jobs
 
 Assuming you have java/git[hub]/maven, to run locally
 ```

@@ -9,5 +9,5 @@ To run locally
 > mvn clean install
 > java -cp 'target/classes:target/dependency/*' ContractorRecommendationsTraining
 ```
-This will create/update a few files in the data/test/output folder. 
+This will create/update a few files in the `data/test/output` folder. 
 Thats all.

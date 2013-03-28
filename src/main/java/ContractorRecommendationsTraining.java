@@ -88,7 +88,7 @@ public class ContractorRecommendationsTraining{
 
 		
 		
-		System.exit(0);
+		//System.exit(0);
 	}
 
 	protected void doTask() {

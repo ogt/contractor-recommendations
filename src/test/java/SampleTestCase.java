@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 
+
 public class SampleTestCase {
 	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();

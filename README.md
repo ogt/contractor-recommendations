@@ -1,6 +1,6 @@
 machine-learning
 ================
-{<img src="https://travis-ci.org/sanigo/contractor-recommendations.png" />}[https://travis-ci.org/sanigo/contractor-recommendations.png]
+[![Build Status](https://secure.travis-ci.org/sanigo/contractor-recommendations.png?branch=master)](http://travis-ci.org/sanigo/contractor-recommendations)
 
 A simple example of using machine learning algorithms to make recommendations of contractors based 
 on their past success/failures being hired for a particular jobs. Uses liblinear.

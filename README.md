@@ -11,4 +11,5 @@ To run locally
 > java -cp 'target/classes:target/dependency/*' ContractorRecommendationsTraining
 ```
 This will create/update a few files in the `data/test/output` folder. 
+
 Thats all.

@@ -4,10 +4,8 @@ machine-learning
 A simple example of using machine learning algorithms to make recommendations of contractors based 
 on their past success/failures being hired for a particular jobs. Uses liblinear.
 
-Assuming you have java/git[hub]/maven, to run locally
+To run locally
 ```
-> hub clone ogt/contractor-recommendation
-> cd !$
 > mvn clean install
 > java -cp 'target/classes:target/dependency/*' ContractorRecommendationsTraining
 ```

@@ -2,7 +2,7 @@ machine-learning
 ================
 
 A simple example of using machine learning algorithms to make recommendations of contractors based 
-on their past success/failures being hired for a particular jobs
+on their past success/failures being hired for a particular jobs. Uses liblinear.
 
 Assuming you have java/git[hub]/maven, to run locally
 ```
